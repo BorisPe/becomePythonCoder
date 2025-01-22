@@ -20,30 +20,32 @@ def toggle_step(index):
 
 def toggle_detail(step_index, detail_index):
     """Callback to handle detail completion toggling."""
-    status = "Completed" if detail_vars[step_index][detail_index].get() else "Incomplete"
+    status = "Completed" if detail_vars[detail_index].get() else "Incomplete"
     detail_text = plan[step_index]['details'][detail_index]
     print(f"Detail '{detail_text}' is now {status}.")
 
 # Populate the scrollable frame with steps and details
-for i in plan:
+for i, step in enumerate(plan):
     # Step checkbox
     step_var = tk.BooleanVar()
     step_vars.append(step_var)
-    rows = len(step_vars)
     step_checkbox = ttk.Checkbutton(
-         text=i["step"], variable=step_var, 
-        command=lambda i=rows: toggle_step(i)
+         text=step["step"], variable=step_var, command=lambda i=i: toggle_step(i)
        
     )
-    for j in i['details']:
+    print(step_var)
+    step_checkbox.grid(row=i, column=1)
+
+
+    for j,details in enumerate(step['details']):
         # Details checkbox
         detail_var = tk.BooleanVar()
         detail_vars.append(detail_var)
         detail_checkbox = ttk.Checkbutton(
-             text=j, variable=detail_var, 
+             text=details, variable=detail_var, command=lambda i=i,j=j: toggle_detail(i,j) 
        
         )
-        detail_checkbox.grid(row=len(i['details']), column=1)
+        detail_checkbox.grid(row=j+i, column=2)
        
    
 
