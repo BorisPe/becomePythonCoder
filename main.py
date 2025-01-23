@@ -7,15 +7,16 @@ from data import plan
 
 # Create the main application window
 root = tk.Tk()
+root.geometry("500x400")
 root.title("Junior Python Developer Plan")
 
-# Create a main frame to hold all content
-main_frame = ttk.Frame(root, padding="10")
-main_frame.grid(row=0, column=0, sticky="nsew")
+# Create a frame to hold the grid layout
+main_frame = ttk.Frame(root)
+main_frame.pack()
 
-# Configure the grid to expand properly
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
+# Configure the grid to have 3 columns with equal weight
+for col in range(3):
+    main_frame.columnconfigure(col, weight=1)
 
 # Track completion status of steps and details
 step_vars = []  # For step-level completion
@@ -36,9 +37,10 @@ def toggle_detail(step_index, detail_index):
 # Populate the scrollable frame with steps and details
 for i, step in enumerate(plan):
     # Create a frame for each step
-    step_frame = ttk.Frame(main_frame, padding="5")
-    step_frame.grid(row=i, column=0, sticky="ew", pady=5)
-    step_frame.columnconfigure(0, weight=1)
+    step_frame = ttk.Frame(main_frame,borderwidth=2, relief='ridge')
+    col = i % 3  # Column index (0, 1, or 2)
+    row = i // 3  # Row index based on the current column
+    step_frame.grid(row=row, column=col)
     # Step checkbox
     step_var = tk.BooleanVar()
     step_vars.append(step_var)
@@ -46,12 +48,13 @@ for i, step in enumerate(plan):
         step_frame, text=step["step"], variable=step_var, command=lambda i=i: toggle_step(i)
        
     )
+    
     step_checkbox.grid(row=0, column=0, sticky="w",padx=10, pady=10)
 
      # Create a frame for details within each step
-    details_frame = ttk.Frame(step_frame, padding="5")
+    details_frame = ttk.Frame(step_frame, padding="15")
     details_frame.grid(row=1, column=0, sticky="ew")
-    details_frame.columnconfigure(0, weight=1)
+   
 
     for j,details in enumerate(step['details']):
         # Details checkbox
