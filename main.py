@@ -7,16 +7,28 @@ from data import plan
 
 # Create the main application window
 root = tk.Tk()
-root.geometry("500x400")
+root.geometry("1500x700")
 root.title("Junior Python Developer Plan")
 
-# Create a frame to hold the grid layout
-main_frame = ttk.Frame(root)
-main_frame.pack()
+# Create a scrollable frame
+canvas = tk.Canvas(root)
+scrollbar = ttk.Scrollbar(root, orient="vertical", command=canvas.yview)
+scrollable_frame = ttk.Frame(canvas)
+
+# Configure the canvas and scrollbar
+scrollable_frame.bind(
+    "<Configure>",
+    lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+)
+canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+canvas.configure(yscrollcommand=scrollbar.set)
+
+canvas.pack(side="left", fill="both", expand=True)
+scrollbar.pack(side="right", fill="y")
 
 # Configure the grid to have 3 columns with equal weight
 for col in range(3):
-    main_frame.columnconfigure(col, weight=1)
+    scrollable_frame.columnconfigure(col, weight=1)
 
 # Track completion status of steps and details
 step_vars = []  # For step-level completion
@@ -32,15 +44,18 @@ def toggle_detail(step_index, detail_index):
     status = "Completed" if detail_vars[detail_index].get() else "Incomplete"
     detail_text = plan[step_index]['details'][detail_index]
     print(f"Detail '{detail_text}' is now {status}.")
+    
 
 
 # Populate the scrollable frame with steps and details
 for i, step in enumerate(plan):
     # Create a frame for each step
-    step_frame = ttk.Frame(main_frame,borderwidth=2, relief='ridge')
+    step_frame = ttk.Frame(scrollable_frame,borderwidth=2, relief='ridge')
     col = i % 3  # Column index (0, 1, or 2)
     row = i // 3  # Row index based on the current column
-    step_frame.grid(row=row, column=col)
+    # Create a frame for each step
+    step_frame = ttk.Frame(scrollable_frame, padding="10", relief="ridge", borderwidth=2)
+    step_frame.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")  # Use sticky="nsew"
     # Step checkbox
     step_var = tk.BooleanVar()
     step_vars.append(step_var)
@@ -58,8 +73,6 @@ for i, step in enumerate(plan):
 
     for j,details in enumerate(step['details']):
         # Details checkbox
-
-         
         detail_var = tk.BooleanVar()
         detail_vars.append(detail_var)
         detail_checkbox = ttk.Checkbutton(
@@ -68,7 +81,7 @@ for i, step in enumerate(plan):
         )
         detail_checkbox.grid(row=j, column=0, sticky="w",padx=10, pady=10)
         
-   
+ 
 
 # Run the application
 root.mainloop()
