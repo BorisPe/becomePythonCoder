@@ -32,7 +32,7 @@ for col in range(3):
 
 # Track completion status of steps and details
 step_vars = []  # For step-level completion
-detail_vars = []  # For detail-level completion
+detail_vars = {}  # For detail-level completion
 
 def toggle_step(index):
     """Callback to handle step completion toggling."""
@@ -41,7 +41,7 @@ def toggle_step(index):
 
 def toggle_detail(step_index, detail_index):
     """Callback to handle detail completion toggling."""
-    status = "Completed" if detail_vars[detail_index].get() else "Incomplete"
+    status = "Completed" if detail_vars[step_index,detail_index].get() else "Incomplete"
     detail_text = plan[step_index]['details'][detail_index]
     print(f"Detail '{detail_text}' is now {status}.")
 
@@ -78,14 +78,14 @@ for i, step in enumerate(plan):
     for j,details in enumerate(step['details']):
         # Details checkbox
         detail_var = tk.BooleanVar()
-        detail_vars.append(detail_var)
+        detail_vars[i,j] = detail_var
         detail_checkbox = ttk.Checkbutton(
             details_frame, text=details, variable=detail_var, command=lambda i=i,j=j: toggle_detail(i,j) 
        
         )
         detail_checkbox.grid(row=j, column=0, sticky="w",padx=10, pady=10)
         
- 
+print(detail_vars) 
 
 # Run the application
 root.mainloop()
