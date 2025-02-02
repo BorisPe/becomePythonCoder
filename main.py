@@ -44,6 +44,10 @@ def toggle_detail(step_index, detail_index):
     status = "Completed" if detail_vars[detail_index].get() else "Incomplete"
     detail_text = plan[step_index]['details'][detail_index]
     print(f"Detail '{detail_text}' is now {status}.")
+
+
+
+
     
 
 
@@ -60,7 +64,7 @@ for i, step in enumerate(plan):
     step_var = tk.BooleanVar()
     step_vars.append(step_var)
     step_checkbox = ttk.Checkbutton(
-        step_frame, text=step["step"], variable=step_var, command=lambda i=i: toggle_step(i)
+        step_frame, text=step["step"], variable=step_var, state="disabled", command=lambda i=i: toggle_step(i)
        
     )
     
