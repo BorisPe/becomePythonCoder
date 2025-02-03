@@ -47,16 +47,11 @@ def toggle_detail(step_index, detail_index):
     check_toggle(step_index)
 
 def check_toggle(step_index):
-    check_value = False
-    for index,value in detail_vars.items():
-        if (index[0] == step_index) and (value.get() == True):
-            check_value = True
-        else:
-            check_value = False
-    if check_value == False :
-        step_vars[step_index].set(True)
-    else:
-        step_vars[step_index].set(False)
+    """If are every details done set True step"""
+    all_completed = all(
+        detail_vars[step_index, j].get() for j in range(len(plan[step_index]["details"]))
+    )
+    step_vars[step_index].set(all_completed)
 
     
 
