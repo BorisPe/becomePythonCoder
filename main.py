@@ -44,7 +44,21 @@ def toggle_detail(step_index, detail_index):
     status = "Completed" if detail_vars[step_index,detail_index].get() else "Incomplete"
     detail_text = plan[step_index]['details'][detail_index]
     print(f"Detail '{detail_text}' is now {status}.")
+    check_toggle(step_index)
 
+def check_toggle(step_index):
+    check_value = False
+    for index,value in detail_vars.items():
+        if (index[0] == step_index) and (value.get() == True):
+            check_value = True
+        else:
+            check_value = False
+    if check_value == False :
+        step_vars[step_index].set(True)
+    else:
+        step_vars[step_index].set(False)
+
+    
 
 
 
