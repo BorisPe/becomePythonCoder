@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 from data import plan
+import pickle
+import os
+
+
 
 # Define the plan
 
@@ -26,6 +30,26 @@ canvas.configure(yscrollcommand=scrollbar.set)
 canvas.pack(side="left", fill="both", expand=True)
 scrollbar.pack(side="right", fill="y")
 
+# Súbor na uloženie stavu
+SAVE_FILE = "progress.pkl"
+
+# Načíta uložené dáta (ak existujú)
+def load_progress():
+    if os.path.exists(SAVE_FILE):
+        with open(SAVE_FILE, "rb") as f:
+            return pickle.load(f)
+    return {}
+
+# Uloží aktuálny stav pri ukončení
+def save_progress():
+    progress = {
+        "steps": [var.get() for var in step_vars],
+        "details": {(i, j): var.get() for (i, j), var in detail_vars.items()},
+    }
+    with open(SAVE_FILE, "wb") as f:
+        pickle.dump(progress, f)
+
+
 # Configure the grid to have 3 columns with equal weight
 for col in range(3):
     scrollable_frame.columnconfigure(col, weight=1)
@@ -37,14 +61,18 @@ detail_vars = {}  # For detail-level completion
 def toggle_step(index):
     """Callback to handle step completion toggling."""
     status = "Completed" if step_vars[index].get() else "Incomplete"
-    print(f"Step '{plan[index]['step']}' is now {status}.")
+   # print(f"Step '{plan[index]['step']}' is now {status}.")
+    save_progress()
+    
 
 def toggle_detail(step_index, detail_index):
     """Callback to handle detail completion toggling."""
     status = "Completed" if detail_vars[step_index,detail_index].get() else "Incomplete"
     detail_text = plan[step_index]['details'][detail_index]
-    print(f"Detail '{detail_text}' is now {status}.")
+   # print(f"Detail '{detail_text}' is now {status}.")
     check_toggle(step_index)
+    save_progress()
+    
 
 def check_toggle(step_index):
     """If are every details done set True step"""
@@ -53,11 +81,7 @@ def check_toggle(step_index):
     )
     step_vars[step_index].set(all_completed)
 
-    
-
-
-
-    
+saved_file = load_progress() 
 
 
 # Populate the scrollable frame with steps and details
@@ -70,7 +94,8 @@ for i, step in enumerate(plan):
     step_frame = ttk.Frame(scrollable_frame, padding="10", relief="ridge", borderwidth=2)
     step_frame.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")  # Use sticky="nsew"
     # Step checkbox
-    step_var = tk.BooleanVar()
+    
+    step_var = tk.BooleanVar(value=saved_file['steps'][i])
     step_vars.append(step_var)
     step_checkbox = ttk.Checkbutton(
         step_frame, text=step["step"], variable=step_var, state="disabled", command=lambda i=i: toggle_step(i)
@@ -86,15 +111,18 @@ for i, step in enumerate(plan):
 
     for j,details in enumerate(step['details']):
         # Details checkbox
-        detail_var = tk.BooleanVar()
+        detail_var = tk.BooleanVar(value=saved_file['details'][i,j])
         detail_vars[i,j] = detail_var
         detail_checkbox = ttk.Checkbutton(
             details_frame, text=details, variable=detail_var, command=lambda i=i,j=j: toggle_detail(i,j) 
        
         )
         detail_checkbox.grid(row=j, column=0, sticky="w",padx=10, pady=10)
-        
-print(detail_vars) 
+    
 
+
+
+
+       
 # Run the application
 root.mainloop()
