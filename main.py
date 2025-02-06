@@ -94,8 +94,10 @@ for i, step in enumerate(plan):
     step_frame = ttk.Frame(scrollable_frame, padding="10", relief="ridge", borderwidth=2)
     step_frame.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")  # Use sticky="nsew"
     # Step checkbox
-    
-    step_var = tk.BooleanVar(value=saved_file['steps'][i])
+    if not saved_file:
+        step_var = tk.BooleanVar()
+    else:    
+        step_var = tk.BooleanVar(value=saved_file['steps'][i])
     step_vars.append(step_var)
     step_checkbox = ttk.Checkbutton(
         step_frame, text=step["step"], variable=step_var, state="disabled", command=lambda i=i: toggle_step(i)
@@ -111,7 +113,10 @@ for i, step in enumerate(plan):
 
     for j,details in enumerate(step['details']):
         # Details checkbox
-        detail_var = tk.BooleanVar(value=saved_file['details'][i,j])
+        if not saved_file:
+            detail_var = tk.BooleanVar()
+        else:
+            detail_var = tk.BooleanVar(value=saved_file['details'][i,j])
         detail_vars[i,j] = detail_var
         detail_checkbox = ttk.Checkbutton(
             details_frame, text=details, variable=detail_var, command=lambda i=i,j=j: toggle_detail(i,j) 
